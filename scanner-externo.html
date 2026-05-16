@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Escáner – Comedor FYT</title>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #0b1220; --bg-2: #111a2e; --panel: #15203a; --panel-2: #1c2944;
+    --border: #243250; --text: #e8edf7; --text-2: #9aa7c4; --text-3: #6b78a0;
+    --accent: #f59e0b; --accent-2: #fb923c; --accent-glow: rgba(245, 158, 11, 0.25);
+    --success: #34d399; --success-bg: rgba(52, 211, 153, 0.18);
+    --danger: #f87171; --danger-bg: rgba(248, 113, 113, 0.18);
+    --info: #60a5fa; --info-bg: rgba(96, 165, 250, 0.18);
+    --purple: #c084fc; --purple-bg: rgba(192, 132, 252, 0.18);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100vh; }
+  .header { padding: 14px 16px; padding-top: max(14px, env(safe-area-inset-top)); background: var(--bg-2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .logo { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; color: #1a1505; font-weight: 700; font-size: 11px; flex-shrink: 0; }
+  .header-text { flex: 1; min-width: 0; }
+  .header-title { font-size: 14px; font-weight: 600; }
+  .header-sub { font-size: 11px; color: var(--text-2); }
+  .container { padding: 16px; max-width: 540px; margin: 0 auto; }
+
+  /* Pantalla inicial */
+  .start-screen { text-align: center; padding: 40px 20px; background: var(--bg-2); border-radius: 16px; border: 1px solid var(--border); }
+  .start-icon { width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-radius: 20px; display: grid; place-items: center; box-shadow: 0 8px 24px var(--accent-glow); }
+  .start-icon svg { width: 40px; height: 40px; color: #1a1505; }
+  .start-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .start-sub { font-size: 14px; color: var(--text-2); margin-bottom: 24px; line-height: 1.5; }
+  .btn-start { background: linear-gradient(180deg, var(--accent), var(--accent-2)); color: #1a1505; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px var(--accent-glow); font-family: inherit; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-start:hover { transform: translateY(-1px); }
+  .btn-start:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-start svg { width: 20px; height: 20px; }
+
+  /* Config inicial */
+  .config-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .config-card label { display: block; font-size: 12px; color: var(--text-2); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+  .config-card input { width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text); font-family: ui-monospace, monospace; }
+  .config-card input:focus { outline: none; border-color: var(--accent); }
+  .config-card .help { font-size: 11px; color: var(--text-3); margin-top: 6px; }
+  .btn-secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .btn-secondary:hover { background: var(--panel-2); }
+
+  #qr-reader { background: var(--bg-2); border-radius: 12px; overflow: hidden; }
+  #qr-reader video { width: 100% !important; height: auto !important; }
+  .status { padding: 16px; border-radius: 12px; margin-top: 14px; text-align: center; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+  .status.idle { background: var(--bg-2); border: 1px dashed var(--border); color: var(--text-2); }
+  .status.success { background: var(--success-bg); border: 1px solid var(--success); color: var(--success); animation: flash 0.4s; }
+  .status.danger { background: var(--danger-bg); border: 1px solid var(--danger); color: var(--danger); animation: flash 0.4s; }
+  .status.info { background: var(--info-bg); border: 1px solid var(--info); color: var(--info); animation: flash 0.4s; }
+  .status.purple { background: var(--purple-bg); border: 1px solid var(--purple); color: var(--purple); animation: flash 0.4s; }
+  @keyframes flash { 0% { transform: scale(0.98); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+  .status-title { font-size: 18px; font-weight: 700; line-height: 1.2; }
+  .status-sub { font-size: 13px; opacity: 0.9; }
+  .recent { margin-top: 18px; }
+  .recent-title { font-size: 12px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  .recent-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
+  .recent-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; margin-bottom: 4px; background: var(--bg-2); font-size: 13px; }
+  .recent-item.ok { border-left: 3px solid var(--success); }
+  .recent-item.fail { border-left: 3px solid var(--danger); }
+  .recent-time { color: var(--text-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .recent-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #qr-reader__dashboard { background: var(--panel) !important; padding: 8px !important; }
+  #qr-reader__dashboard_section_csr button, #qr-reader__dashboard_section button { background: var(--accent) !important; color: #1a1505 !important; border: none !important; padding: 6px 12px !important; border-radius: 6px !important; font-family: inherit !important; cursor: pointer !important; font-size: 13px !important; }
+  #qr-reader select { background: var(--panel-2) !important; color: var(--text) !important; border: 1px solid var(--border) !important; padding: 4px !important; border-radius: 4px !important; }
+  .loader { width: 14px; height: 14px; border: 2px solid var(--text-3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hidden { display: none !important; }
+  .error-box { background: var(--danger-bg); border: 1px solid var(--danger); color: var(--danger); padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 13px; }
+  .footer { padding: 14px; text-align: center; font-size: 11px; color: var(--text-3); }
+  .footer a { color: var(--text-2); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">FYT</div>
+  <div class="header-text">
+    <div class="header-title">Escáner de comedor</div>
+    <div class="header-sub" id="header-sub">Listo para iniciar</div>
+  </div>
+  <button class="btn-secondary" id="btn-reconfig" style="display:none; padding: 6px 10px; font-size: 11px;">⚙️</button>
+</div>
+
+<div class="container">
+
+  <!-- Pantalla de configuración inicial (solo se ve la primera vez) -->
+  <div id="config-screen" class="config-card hidden">
+    <label>URL del portal (Apps Script)</label>
+    <input type="text" id="config-url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off">
+    <div class="help">Pega aquí tu URL del portal terminada en <code>/exec</code></div>
+    <button class="btn-start" id="btn-save-config" style="margin-top: 14px; width: 100%; justify-content: center;">Guardar y continuar</button>
+    <div id="config-error"></div>
+  </div>
+
+  <!-- Pantalla inicial: encender cámara -->
+  <div id="start-screen" class="start-screen hidden">
+    <div class="start-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </div>
+    <div class="start-title">Listo para escanear</div>
+    <div class="start-sub">Toca el botón para encender la cámara.<br>El navegador te pedirá permiso una sola vez.</div>
+    <button class="btn-start" id="btn-start-camera">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      Encender cámara
+    </button>
+    <div id="start-error"></div>
+  </div>
+
+  <!-- Pantalla del scanner activo -->
+  <div id="scanner-screen" class="hidden">
+    <div id="qr-reader"></div>
+    <div class="status idle" id="status">
+      <div class="status-title">Apunta al código QR</div>
+      <div class="status-sub">La asistencia se registra automáticamente</div>
+    </div>
+    <div class="recent">
+      <div class="recent-title">
+        <span>Últimos escaneos</span>
+        <span id="recent-count" style="text-transform:none;">0</span>
+      </div>
+      <ul class="recent-list" id="recent-list"></ul>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Comedor FYT · Escáner externo</div>
+
+<script>
+let scannerInstance = null;
+let lastScanTime = 0;
+let lastScanId = '';
+const recent = [];
+let portalUrl = '';
+
+function $(id) { return document.getElementById(id); }
+function nowTime() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+}
+function setStatus(kind, title, sub) {
+  const s = $('status');
+  s.className = 'status ' + kind;
+  s.innerHTML = '<div class="status-title">' + title + '</div>' + (sub ? '<div class="status-sub">' + sub + '</div>' : '');
+}
+function pushRecent(item) {
+  recent.unshift(item);
+  if (recent.length > 30) recent.pop();
+  renderRecent();
+}
+function renderRecent() {
+  $('recent-count').textContent = recent.length;
+  $('recent-list').innerHTML = recent.map(r =>
+    '<li class="recent-item ' + (r.ok ? 'ok' : 'fail') + '">' +
+      '<span class="recent-time">' + r.time + '</span>' +
+      '<span class="recent-name">' + (r.name || r.id) + (r.msg ? ' — ' + r.msg : '') + '</span>' +
+    '</li>'
+  ).join('');
+}
+
+// === JSONP call al portal (compatible cross-origin con Apps Script) ===
+function callPortal(params) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_cb_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+    const timeout = setTimeout(() => {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      reject(new Error('Timeout'));
+    }, 15000);
+    window[cbName] = function(data) {
+      clearTimeout(timeout);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      resolve(data);
+    };
+    const qs = Object.keys(params).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k])).join('&');
+    const url = portalUrl + (portalUrl.indexOf('?') === -1 ? '?' : '&') + qs + '&callback=' + cbName;
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[cbName];
+      reject(new Error('Error de red'));
+    };
+    document.body.appendChild(script);
+  });
+}
+
+async function onQRDecoded(decoded) {
+  const now = Date.now();
+  const id = String(decoded || '').trim().toUpperCase();
+  if (now - lastScanTime < 800) return;
+  if (id === lastScanId && (now - lastScanTime) < 3000) return;
+  lastScanTime = now;
+  lastScanId = id;
+  if (!id) return;
+
+  setStatus('info', '<span class="loader"></span> Procesando…', id);
+
+  try {
+    const r = await callPortal({ action: 'scan', id: id });
+    if (r.ok) {
+      const tipo = r.tipo === 'invitado' ? 'Invitado' : 'Personal';
+      setStatus(r.tipo === 'invitado' ? 'purple' : 'success', '✓ ' + r.nombre, tipo + ' · ' + r.id);
+      pushRecent({ time: nowTime(), name: r.nombre, id: r.id, ok: true });
+      // Vibración de éxito si está disponible
+      if (navigator.vibrate) navigator.vibrate(80);
+    } else {
+      setStatus('danger', '✗ ' + (r.error || 'Error'), id);
+      pushRecent({ time: nowTime(), name: id, id: id, ok: false, msg: r.error || 'Error' });
+      if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+    }
+  } catch (e) {
+    setStatus('danger', 'Error de conexión', 'Reintenta');
+    pushRecent({ time: nowTime(), name: id, id: id, ok: false, msg: 'Conexión' });
+  }
+}
+
+async function arrancarCamara() {
+  const btn = $('btn-start-camera');
+  const errBox = $('start-error');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Iniciando cámara…';
+  errBox.innerHTML = '';
+
+  if (typeof Html5Qrcode === 'undefined') {
+    errBox.innerHTML = '<div class="error-box">No se pudo cargar la librería. Revisa tu conexión.</div>';
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Encender cámara';
+    return;
+  }
+
+  try {
+    $('start-screen').classList.add('hidden');
+    $('scanner-screen').classList.remove('hidden');
+    $('btn-reconfig').style.display = '';
+
+    scannerInstance = new Html5Qrcode('qr-reader');
+    await scannerInstance.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 240, height: 240 } },
+      onQRDecoded,
+      () => {}
+    );
+    $('header-sub').textContent = 'Cámara activa';
+  } catch (e) {
+    console.error('Error al iniciar cámara:', e);
+    $('scanner-screen').classList.add('hidden');
+    $('start-screen').classList.remove('hidden');
+    let mensajeError = 'No se pudo acceder a la cámara. ';
+    const msg = String(e && e.message || e || '').toLowerCase();
+    if (msg.includes('permission') || msg.includes('denied') || msg.includes('not allowed') || msg.includes('notallowed')) {
+      mensajeError = 'Permiso de cámara denegado. Ve a Ajustes del navegador y permite el acceso, o reinstala los permisos.';
+    } else if (msg.includes('not found') || msg.includes('notfound')) {
+      mensajeError = 'No se encontró cámara en este dispositivo.';
+    } else if (msg.includes('https') || msg.includes('secure')) {
+      mensajeError = 'La cámara requiere conexión HTTPS segura.';
+    } else {
+      mensajeError += String(e && e.message || e || 'Error desconocido');
+    }
+    errBox.innerHTML = '<div class="error-box">' + mensajeError + '</div>';
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Reintentar';
+  }
+}
+
+// === Configuración inicial ===
+function mostrarConfig() {
+  $('config-screen').classList.remove('hidden');
+  $('start-screen').classList.add('hidden');
+  $('scanner-screen').classList.add('hidden');
+  $('config-url').value = portalUrl || '';
+}
+
+async function guardarConfig() {
+  const url = $('config-url').value.trim();
+  const errBox = $('config-error');
+  errBox.innerHTML = '';
+  if (!url) { errBox.innerHTML = '<div class="error-box">Pega la URL del portal</div>'; return; }
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec/.test(url)) {
+    errBox.innerHTML = '<div class="error-box">URL inválida. Debe terminar en /exec</div>';
+    return;
+  }
+  // Verificar que responde
+  const btn = $('btn-save-config');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Verificando…';
+  portalUrl = url;
+  try {
+    const r = await callPortal({ action: 'ping' });
+    if (r && r.ok) {
+      localStorage.setItem('comedor_portal_url', url);
+      $('config-screen').classList.add('hidden');
+      $('start-screen').classList.remove('hidden');
+      $('header-sub').textContent = 'Conectado · ' + r.fecha;
+    } else {
+      errBox.innerHTML = '<div class="error-box">El portal respondió pero con error</div>';
+    }
+  } catch (e) {
+    errBox.innerHTML = '<div class="error-box">No se pudo conectar. Verifica la URL y que la implementación esté publicada para "Cualquiera".</div>';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Guardar y continuar';
+  }
+}
+
+$('btn-start-camera').addEventListener('click', arrancarCamara);
+$('btn-save-config').addEventListener('click', guardarConfig);
+$('btn-reconfig').addEventListener('click', () => {
+  if (scannerInstance) try { scannerInstance.stop(); } catch(e){}
+  mostrarConfig();
+});
+
+window.addEventListener('beforeunload', () => {
+  if (scannerInstance) try { scannerInstance.stop(); } catch(e){}
+});
+
+// Inicialización
+(function init() {
+  portalUrl = localStorage.getItem('comedor_portal_url') || '';
+  if (portalUrl) {
+    $('start-screen').classList.remove('hidden');
+    $('btn-reconfig').style.display = '';
+    $('header-sub').textContent = 'Configurado';
+  } else {
+    $('config-screen').classList.remove('hidden');
+    $('header-sub').textContent = 'Configuración inicial';
+  }
+})();
+</script>
+
+</body>
+</html>
