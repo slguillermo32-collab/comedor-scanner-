@@ -7,9 +7,9 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
   :root {
-    --bg: #0b1220; --bg-2: #111a2e; --panel: #15203a; --panel-2: #1c2944;
-    --border: #243250; --text: #e8edf7; --text-2: #9aa7c4; --text-3: #6b78a0;
-    --accent: #f59e0b; --accent-2: #fb923c; --accent-glow: rgba(245, 158, 11, 0.25);
+    --bg: #0a1f44; --bg-2: #0d2554; --panel: #142b5d; --panel-2: #1a3568;
+    --border: #1f3d75; --text: #e8edf7; --text-2: #94a8cf; --text-3: #6478a3;
+    --accent: #3b82f6; --accent-2: #2563eb; --accent-glow: rgba(59, 130, 246, 0.30);
     --success: #34d399; --success-bg: rgba(52, 211, 153, 0.18);
     --danger: #f87171; --danger-bg: rgba(248, 113, 113, 0.18);
     --info: #60a5fa; --info-bg: rgba(96, 165, 250, 0.18);
@@ -18,7 +18,7 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100vh; }
   .header { padding: 14px 16px; padding-top: max(14px, env(safe-area-inset-top)); background: var(--bg-2); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-  .logo { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; color: #1a1505; font-weight: 700; font-size: 11px; flex-shrink: 0; }
+  .logo { width: 36px; height: 36px; border-radius: 9px; background: #ffffff; color: #0a1f44; display: grid; place-items: center; flex-shrink: 0; box-shadow: 0 0 0 1px var(--border); font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 700; font-size: 22px; line-height: 1; letter-spacing: -0.02em; }
   .header-text { flex: 1; min-width: 0; }
   .header-title { font-size: 14px; font-weight: 600; }
   .header-sub { font-size: 11px; color: var(--text-2); }
@@ -26,11 +26,10 @@
 
   /* Pantalla inicial */
   .start-screen { text-align: center; padding: 40px 20px; background: var(--bg-2); border-radius: 16px; border: 1px solid var(--border); }
-  .start-icon { width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-radius: 20px; display: grid; place-items: center; box-shadow: 0 8px 24px var(--accent-glow); }
-  .start-icon svg { width: 40px; height: 40px; color: #1a1505; }
+  .start-icon { width: 90px; height: 90px; margin: 0 auto 20px; background: #ffffff; color: #0a1f44; border-radius: 22px; display: grid; place-items: center; box-shadow: 0 8px 24px var(--accent-glow); font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 700; font-size: 56px; line-height: 1; letter-spacing: -0.02em; }
   .start-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
   .start-sub { font-size: 14px; color: var(--text-2); margin-bottom: 24px; line-height: 1.5; }
-  .btn-start { background: linear-gradient(180deg, var(--accent), var(--accent-2)); color: #1a1505; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px var(--accent-glow); font-family: inherit; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-start { background: linear-gradient(180deg, var(--accent), var(--accent-2)); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px var(--accent-glow); font-family: inherit; display: inline-flex; align-items: center; gap: 8px; }
   .btn-start:hover { transform: translateY(-1px); }
   .btn-start:disabled { opacity: 0.6; cursor: not-allowed; }
   .btn-start svg { width: 20px; height: 20px; }
@@ -64,7 +63,7 @@
   .recent-time { color: var(--text-3); font-size: 11px; font-variant-numeric: tabular-nums; }
   .recent-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #qr-reader__dashboard { background: var(--panel) !important; padding: 8px !important; }
-  #qr-reader__dashboard_section_csr button, #qr-reader__dashboard_section button { background: var(--accent) !important; color: #1a1505 !important; border: none !important; padding: 6px 12px !important; border-radius: 6px !important; font-family: inherit !important; cursor: pointer !important; font-size: 13px !important; }
+  #qr-reader__dashboard_section_csr button, #qr-reader__dashboard_section button { background: var(--accent) !important; color: white !important; border: none !important; padding: 6px 12px !important; border-radius: 6px !important; font-family: inherit !important; cursor: pointer !important; font-size: 13px !important; }
   #qr-reader select { background: var(--panel-2) !important; color: var(--text) !important; border: 1px solid var(--border) !important; padding: 4px !important; border-radius: 4px !important; }
   .loader { width: 14px; height: 14px; border: 2px solid var(--text-3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -77,7 +76,7 @@
 <body>
 
 <div class="header">
-  <div class="logo">FYT</div>
+  <div class="logo">F</div>
   <div class="header-text">
     <div class="header-title">Escáner de comedor</div>
     <div class="header-sub" id="header-sub">Listo para iniciar</div>
@@ -98,9 +97,7 @@
 
   <!-- Pantalla inicial: encender cámara -->
   <div id="start-screen" class="start-screen hidden">
-    <div class="start-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-    </div>
+    <div class="start-icon">F</div>
     <div class="start-title">Listo para escanear</div>
     <div class="start-sub">Toca el botón para encender la cámara.<br>El navegador te pedirá permiso una sola vez.</div>
     <button class="btn-start" id="btn-start-camera">
@@ -204,10 +201,13 @@ async function onQRDecoded(decoded) {
     const r = await callPortal({ action: 'scan', id: id });
     if (r.ok) {
       const tipo = r.tipo === 'invitado' ? 'Invitado' : 'Personal';
-      setStatus(r.tipo === 'invitado' ? 'purple' : 'success', '✓ ' + r.nombre, tipo + ' · ' + r.id);
+      setStatus(r.tipo === 'invitado' ? 'purple' : 'success', '✓ ' + r.nombre, tipo + ' · ' + r.id + ' · 1 comida');
       pushRecent({ time: nowTime(), name: r.nombre, id: r.id, ok: true });
-      // Vibración de éxito si está disponible
       if (navigator.vibrate) navigator.vibrate(80);
+    } else if (r.yaMarcado) {
+      // Mostrar opción de agregar extra
+      mostrarOpcionExtra(r);
+      if (navigator.vibrate) navigator.vibrate(40);
     } else {
       setStatus('danger', '✗ ' + (r.error || 'Error'), id);
       pushRecent({ time: nowTime(), name: id, id: id, ok: false, msg: r.error || 'Error' });
@@ -216,6 +216,60 @@ async function onQRDecoded(decoded) {
   } catch (e) {
     setStatus('danger', 'Error de conexión', 'Reintenta');
     pushRecent({ time: nowTime(), name: id, id: id, ok: false, msg: 'Conexión' });
+  }
+}
+
+function mostrarOpcionExtra(r) {
+  const s = $('status');
+  s.className = 'status info';
+  let html = '<div class="status-title">' + r.nombre + '</div>';
+  html += '<div class="status-sub">Ya tiene ' + r.comidasActuales + ' comida(s) hoy</div>';
+
+  if (r.tipo === 'invitado') {
+    html += '<div class="status-sub" style="margin-top:6px;">Invitado · sin tope</div>';
+  } else {
+    html += '<div class="status-sub" style="margin-top:6px;">Extras esta semana: ' + r.extrasUsadosSemana + ' / ' + r.tope + '</div>';
+  }
+
+  if (r.puedeAgregarExtra) {
+    html += '<button id="btn-add-extra" data-id="' + r.id + '" style="margin-top:14px; background:linear-gradient(180deg, var(--accent), var(--accent-2)); color:#1a1505; border:none; padding:12px 24px; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;">+ Agregar extra</button>';
+    html += '<button id="btn-skip-extra" style="margin-top:8px; margin-left:8px; background:transparent; border:1px solid currentColor; color:inherit; padding:12px 20px; border-radius:10px; font-size:14px; cursor:pointer; font-family:inherit;">Saltar</button>';
+  } else {
+    html += '<div style="margin-top:10px; padding:8px 12px; background:var(--danger-bg); border-radius:6px; color:var(--danger); font-size:12px;">Tope semanal alcanzado</div>';
+  }
+
+  s.innerHTML = html;
+
+  const btnExtra = $('btn-add-extra');
+  if (btnExtra) {
+    btnExtra.addEventListener('click', async () => {
+      const id = btnExtra.dataset.id;
+      btnExtra.disabled = true;
+      btnExtra.innerHTML = '<span class="loader"></span> Agregando…';
+      try {
+        const ex = await callPortal({ action: 'extra', id: id });
+        if (ex.ok) {
+          setStatus('success', '✓ Extra agregado a ' + ex.nombre, ex.comidasActuales + ' comidas hoy · ' + (ex.tipo === 'invitado' ? 'Invitado' : ex.extrasUsadosSemana + '/' + ex.tope + ' extras semana'));
+          pushRecent({ time: nowTime(), name: ex.nombre + ' (+extra)', id: ex.id, ok: true });
+          if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+          // Reset el antirrebote para que pueda volver a escanear
+          lastScanId = '';
+        } else {
+          setStatus('danger', '✗ ' + (ex.error || 'Error'), id);
+          pushRecent({ time: nowTime(), name: id, id: id, ok: false, msg: ex.error || 'Error' });
+          if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+        }
+      } catch (e) {
+        setStatus('danger', 'Error de conexión', 'Reintenta');
+      }
+    });
+  }
+  const btnSkip = $('btn-skip-extra');
+  if (btnSkip) {
+    btnSkip.addEventListener('click', () => {
+      setStatus('idle', 'Apunta al código QR', 'La asistencia se registra automáticamente');
+      lastScanId = '';
+    });
   }
 }
 
